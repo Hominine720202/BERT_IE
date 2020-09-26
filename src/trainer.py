@@ -109,9 +109,12 @@ def train_and_fit(args):
     mask_id = tokenizer.mask_token_id
     update_size = len(train_loader)//10
     for epoch in range(start_epoch, args.num_epochs):
+        print("-- starting epoch number -- {}".format(epoch))
         start_time = time.time()
+        print('--- starting train net ..')
         net.train(); total_loss = 0.0; losses_per_batch = []; total_acc = 0.0; lm_accuracy_per_batch = []
         for i, data in enumerate(train_loader, 0):
+            print(f"--- i: {i} / {len(train_loader)}")
             x, masked_for_pred, e1_e2_start, _, blank_labels, _,_,_,_,_ = data
             masked_for_pred1 =  masked_for_pred
             masked_for_pred = masked_for_pred[(masked_for_pred != pad_id)]
@@ -157,7 +160,7 @@ def train_and_fit(args):
             total_loss += loss.item()
             total_acc += evaluate_(lm_logits, blanks_logits, masked_for_pred, blank_labels, \
                                    tokenizer, print_=False)[0]
-            
+            print("--- before printing final results ..")
             if (i % update_size) == (update_size - 1):
                 losses_per_batch.append(args.gradient_acc_steps*total_loss/update_size)
                 lm_accuracy_per_batch.append(total_acc/update_size)
